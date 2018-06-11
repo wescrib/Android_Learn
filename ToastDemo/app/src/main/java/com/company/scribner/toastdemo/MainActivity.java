@@ -22,7 +22,10 @@ public class MainActivity extends AppCompatActivity {
     public void btnPressed(View v){
         switch(v.getId()) {
             case R.id.button: {
+                //if flag = true and the button is pressed
                 if (flag) {
+                    //switch image to regular pusheen
+                    //this line below is literally going into the drawable folder inside your res (Resources) and finding the image names in there.
                     image.setImageResource(R.drawable.pusheen);
                     flag = false;
                     Toast.makeText(this,"FLUFFY!", Toast.LENGTH_SHORT).show();
