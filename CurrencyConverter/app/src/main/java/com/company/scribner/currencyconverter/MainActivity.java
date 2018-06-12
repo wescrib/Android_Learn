@@ -36,35 +36,42 @@ public class MainActivity extends AppCompatActivity {
 
             double result = 0.00;
 
+            String c = "";
+
 
             switch(v.getId()){
                 case R.id.yen:{
                     result = dollar*yenVal;
+                    c = "¥";
                     break;
                 }
 
                 case R.id.ruppee:{
                     result = dollar*ruppeeVal;
+                    c = "₹";
                     break;
                 }
 
                 case R.id.britishPound:{
                     result = dollar*poundVal;
+                    c = "£";
                     break;
                 }
                 case R.id.euro:{
                     result = dollar*euroVal;
+                    c = "€";
                     break;
                 }
 
                 case R.id.dirham:{
                     result = dollar*dirhamVal;
+                    c = "د.إ";
                     break;
                 }
             }
 
             Log.i("result", String.valueOf(result));
-            conRes.setText(String.format("%.2f",result));
+            conRes.setText(String.format(c + " %.2f",result));
         } catch(Exception e){
             conRes.setText("Why are there letters bro?");
         }
