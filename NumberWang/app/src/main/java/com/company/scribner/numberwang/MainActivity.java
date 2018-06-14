@@ -1,11 +1,15 @@
 package com.company.scribner.numberwang;
 
+import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity {
+
+    ImageView img;
 
     public void insertNum(View v){
 
@@ -14,9 +18,16 @@ public class MainActivity extends AppCompatActivity {
 
 
         Number input = new Number(n);
-
-        if(input.isSquare()){
-
+        if(input.isSquare() && input.isTriangular()){
+            img.setImageResource(R.drawable.pusheencake);
+        }
+        else if(input.isSquare()){
+            img.setImageResource(R.drawable.square);
+        }
+        else if(input.isTriangular()){
+            img.setImageResource(R.drawable.triangle);
+        }else{
+            img.setImageResource(R.drawable.poop);
         }
 
 
@@ -27,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        img = (ImageView) findViewById(R.id.imageResult);
     }
 
     public class Number {
