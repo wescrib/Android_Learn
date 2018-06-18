@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -92,7 +93,23 @@ public class MainActivity extends AppCompatActivity {
 
         playAgainButton.setVisibility(View.INVISIBLE);
         winnerText.setVisibility(View.INVISIBLE);
-        drop(v);
+
+        android.support.v7.widget.GridLayout grid = (android.support.v7.widget.GridLayout) findViewById(R.id.grid);
+
+        //below pretty much erases the the board
+        for(int i=0; i<grid.getChildCount(); i++){
+            ImageView counter = (ImageView) grid.getChildAt(i);
+
+            counter.setImageDrawable(null);
+        }
+
+        //updating array since the above for loop erased it
+        for(int i=0; i<gameState.length; i++){
+            gameState[i] = 2;
+        }
+
+        activePlayer = 1;
+        gameActive = true;
     }
 
     @Override
