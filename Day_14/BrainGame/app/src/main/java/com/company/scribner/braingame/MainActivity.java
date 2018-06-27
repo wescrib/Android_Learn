@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void startCountdown(){
         timeLeftview.setText("30");
-        countDownTimer = new CountDownTimer(3100,1000) {
+        countDownTimer = new CountDownTimer(30100,1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 timeLeftview.setText(String.valueOf(millisUntilFinished/1000));
