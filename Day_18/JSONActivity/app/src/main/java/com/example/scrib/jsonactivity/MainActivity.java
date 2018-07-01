@@ -4,19 +4,23 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import butterknife.BindView;
+
 public class MainActivity extends AppCompatActivity {
 
-    TextView textView;
+    TextView weatherView;
 
     JSONObject jsonPart;
 
@@ -58,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 for(int i=0; i< arr.length(); i++){
                     jsonPart = arr.getJSONObject(i);
                 }
-                textView.setText(jsonPart.getString("description")+"\n" + jsonPart.getString("main"));
+                weatherView.setText(jsonPart.getString("main")+": " + jsonPart.getString("description"));
 
             }catch(Exception e){
                 e.printStackTrace();
@@ -66,14 +70,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void getWeather(View view){
+        TaskDownload task = new TaskDownload();
+        task.execute("https://samples.openweathermap.org/data/2.5/weather?q=London&appid=b6907d289e10d714a6e88b30761fae22");
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        textView = findViewById(R.id.textView);
+        weatherView = findViewById(R.id.weatherView);
 
-        TaskDownload task = new TaskDownload();
-        task.execute("https://samples.openweathermap.org/data/2.5/weather?q=London&appid=b6907d289e10d714a6e88b30761fae22");
+//        TaskDownload task = new TaskDownload();
+//        task.execute("https://samples.openweathermap.org/data/2.5/weather?q=London&appid=b6907d289e10d714a6e88b30761fae22");
     }
 }
