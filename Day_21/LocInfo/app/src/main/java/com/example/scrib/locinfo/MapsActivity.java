@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.scrib.locinfo.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -28,6 +29,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+
+    private String address;
 
     private GoogleMap mMap;
 
@@ -86,7 +89,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 try {
                     List<Address> addressList = gc.getFromLocation(location.getLatitude(),location.getLongitude(),1);
                     if(addressList != null && addressList.size() > 0){
-                        Log.i("Place", addressList.get(0).toString());
+                        address = "";
+
+                        if(addressList.get(0).getSubThoroughfare() != null){
+                            address += addressList.get(0).getSubThoroughfare() + " ";
+                        }
+
+                        //Thoroughfare == road?
+                        if(addressList.get(0).getThoroughfare() != null){
+                            address += addressList.get(0).getThoroughfare() + " ";
+                        }
+
+                        //Locality == city
+                        if(addressList.get(0).getLocality() != null){
+                            address += addressList.get(0).getLocality() + " ";
+                        }
+
+                        //AdminArea == state
+                        if(addressList.get(0).getAdminArea() != null){
+                            address += addressList.get(0).getAdminArea() + " ";
+                        }
+
+                        //Locality == zip
+                        if(addressList.get(0).getPostalCode() != null){
+                            address += addressList.get(0).getPostalCode();
+                        }
+
+                        Toast.makeText(MapsActivity.this, address, Toast.LENGTH_LONG).show();
+
+
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
