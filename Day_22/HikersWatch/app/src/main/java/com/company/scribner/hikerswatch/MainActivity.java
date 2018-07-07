@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.title)TextView title;
     @BindView(R.id.latitudeView)TextView latitude;
     @BindView(R.id.longitudeView)TextView longitude;
+    @BindView(R.id.altitudeView)TextView altitude;
     @BindView(R.id.accuracyView)TextView accuracy;
     @BindView(R.id.addressView)TextView address;
 
@@ -26,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+
 
 
 
