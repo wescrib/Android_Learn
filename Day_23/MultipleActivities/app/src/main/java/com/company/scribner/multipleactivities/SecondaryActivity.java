@@ -8,27 +8,15 @@ import android.widget.TextView;
 
 public class SecondaryActivity extends AppCompatActivity {
 
-
-
-
-
-    public void prevPage(View view){
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-
-        startActivity(intent);
-
-//        finish();
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_secondary);
 
-        TextView textView = findViewById(R.id.textView2);
+        TextView textView = findViewById(R.id.textView);
 
         Intent intent = getIntent();
-        int age = intent.getIntExtra("age",0);
-        textView.setText(String.valueOf(age));
+        String person = intent.getStringExtra("name");
+        textView.setText(person);
     }
 }
