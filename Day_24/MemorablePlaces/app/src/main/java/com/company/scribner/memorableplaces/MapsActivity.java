@@ -3,8 +3,8 @@ package com.company.scribner.memorableplaces;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Camera;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -25,6 +25,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -113,9 +114,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }else{
             Location placeLocation = new Location (LocationManager.GPS_PROVIDER);
-            placeLocation.setLatitude(MainActivity.coords.get(intent.getIntExtra("placeNum",0)).latitude);
-            placeLocation.setLongitude(MainActivity.coords.get(intent.getIntExtra("placeNum", 0)).longitude);
-            centerMapOnLoc(placeLocation, MainActivity.locs.get(intent.getIntExtra("placeNum", 0)));
+            placeLocation.setLatitude(MainActivity.locations.get(intent.getIntExtra("placeNum",0)).latitude);
+            centerMapOnLoc(placeLocation, MainActivity.places.get(intent.getIntExtra("placeNum", 0)));
         }
     }
 
@@ -147,11 +147,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             address += sdf.format(new Date());
         }
 
-        MainActivity.locs.add(address);
-        MainActivity.coords.add(latLng);
+        mMap.addMarker(new MarkerOptions().position(latLng).title(address));
+
+        MainActivity.places.add(address);
+        MainActivity.locations.add(latLng);
         MainActivity.arrayAdapter.notifyDataSetChanged();
 
+        SharedPreferences sharedPreferences = this.getSharedPreferences("com.company.scribner.memorableplaces", Context.MODE_PRIVATE);
+
+        try{
+            ArrayList<String> latitudes = new ArrayList<>();
+            ArrayList<String> longitudes = new ArrayList<>();
+
+            for(LatLng coord : MainActivity.locations){
+                latitudes.add(Double.toString(coord.latitude));
+                longitudes.add(Double.toString(coord.longitude));
+            }
+
+            sharedPreferences.edit().putString("places",ObjectSerializer.serialize(MainActivity.places)).apply();
+            sharedPreferences.edit().putString("lats",ObjectSerializer.serialize(latitudes)).apply();
+            sharedPreferences.edit().putString("lons",ObjectSerializer.serialize(longitudes)).apply();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
         Toast.makeText(this, "Saved!", Toast.LENGTH_SHORT).show();
-        mMap.addMarker(new MarkerOptions().position(latLng).title(address));
+
     }
 }
