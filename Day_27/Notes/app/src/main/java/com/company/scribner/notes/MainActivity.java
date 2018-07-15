@@ -28,8 +28,7 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
 
     static ArrayList<String> toDoList = new ArrayList<String>();
-
-    ArrayAdapter arrayAdapter;
+    static ArrayAdapter arrayAdapter;
 
     SharedPreferences sp;
     Intent intent;
@@ -44,10 +43,10 @@ public class MainActivity extends AppCompatActivity {
         if(toDoList.isEmpty()) {
             toDoList.add("List Items will appear here");
 
-//        }else{
-//            if(toDoList.get(0).equals("List Items will appear here")){
-//                toDoList.remove(0);
-//            }
+        }else{
+            if(toDoList.get(0).equals("List Items will appear here")){
+                toDoList.remove(0);
+            }
         }
     }
 
