@@ -1,10 +1,13 @@
 package com.company.scribner.notes;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,6 +18,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,18 +41,13 @@ public class MainActivity extends AppCompatActivity {
 
     protected void init(){
         title.setRotation(-10);
-        toDoList.clear();
-    }
-
-    protected void checkListSize(){
-        if(toDoList.isEmpty()) {
-            toDoList.add("List Items will appear here");
-
-        }else{
-            if(toDoList.get(0).equals("List Items will appear here")){
-                toDoList.remove(0);
+        if(toDoList.size()>1 && toDoList.get(0).equals("Note items go here")){
+            toDoList.remove(0);
+            arrayAdapter.notifyDataSetChanged();
+            HashSet<String> set = new HashSet<>(MainActivity.toDoList);
+            sp.edit().putStringSet("list_items",set).apply();
+            testRemove(set);
             }
-        }
     }
 
     @Override
@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         switch(item.getItemId()){
             case R.id.addNote:{
                 intent = new Intent(getApplicationContext(), AddNoteActivity.class);
+                intent.putExtra("itemId", -1);
                 startActivity(intent);
                 return true;
             }
@@ -72,21 +73,31 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    protected void testRemove(HashSet set){
+        for(Iterator<String> iterator = set.iterator(); iterator.hasNext();){
+            String s = iterator.next();
+            if(s.equals("List Items will appear here")){
+                iterator.remove();
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        sp = this.getSharedPreferences("com.company.scribner.notes", Context.MODE_PRIVATE);
-        init();
+        sp = getApplication().getSharedPreferences("com.company.scribner.notes", Context.MODE_PRIVATE);
+        HashSet < String > set = (HashSet < String > ) sp.getStringSet("list_items", null);
 
-        try{
-            toDoList = (ArrayList<String>) ObjectSerializer.deserialize(sp.getString("list_items", ObjectSerializer.serialize(new ArrayList<String>())));
-        }catch(Exception e){
-            e.printStackTrace();
+        init();
+        if(set == null || set.size() == 0){
+             toDoList.add("Note items go here");
+        }else{
+            testRemove(set);
+            toDoList = new ArrayList(set);
         }
 
-        checkListSize();
 
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, toDoList);
         listView.setAdapter(arrayAdapter);
@@ -95,8 +106,33 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 intent = new Intent(getApplicationContext(), AddNoteActivity.class);
+                Log.i("noteId", String.valueOf(position));
                 intent.putExtra("itemId", position);
                 startActivity(intent);
+            }
+        });
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                final int itemToRemove = position;
+
+                new AlertDialog.Builder(MainActivity.this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Remove")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                toDoList.remove(itemToRemove);
+                                arrayAdapter.notifyDataSetChanged();
+                                HashSet<String> set = new HashSet<>(MainActivity.toDoList);
+                                sp.edit().putStringSet("list_items",set).apply();
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
+                return true;
             }
         });
 

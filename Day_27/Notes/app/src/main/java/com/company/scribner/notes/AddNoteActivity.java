@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,8 +47,11 @@ public class AddNoteActivity extends AppCompatActivity {
             case R.id.save:{
                 String content = editNote.getText().toString();
                 MainActivity.toDoList.add(content);
+                itemId = MainActivity.toDoList.size() - 1;
                 try{
-                    sp.edit().putString("list_items",ObjectSerializer.serialize(MainActivity.toDoList)).apply();
+                    MainActivity.arrayAdapter.notifyDataSetChanged();
+                    HashSet<String> set = new HashSet<>(MainActivity.toDoList);
+                    sp.edit().putStringSet("list_items",set).apply();
                     Toast.makeText(this, "Note Added!", Toast.LENGTH_SHORT).show();
                     backToMainActivity();
 
@@ -73,11 +77,15 @@ public class AddNoteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_note);
         ButterKnife.bind(this);
         sp = this.getSharedPreferences("com.company.scribner.notes", Context.MODE_PRIVATE);
+        HashSet < String > set = (HashSet < String > ) sp.getStringSet("list_items", null);
 
         Intent intent = getIntent();
         itemId = intent.getIntExtra("itemId", -1);
         if(itemId >= 0){
             editNote.setText(MainActivity.toDoList.get(itemId));
+        }else{
+            MainActivity.toDoList.add("");
+            itemId = MainActivity.toDoList.size() - 1;
         }
 
         editNote.addTextChangedListener(new TextWatcher() {
@@ -91,6 +99,8 @@ public class AddNoteActivity extends AppCompatActivity {
                 MainActivity.toDoList.set(itemId, String.valueOf(s));
                 MainActivity.arrayAdapter.notifyDataSetChanged();
 //                Log.i("LIST ITEM",MainActivity.toDoList.get(itemId));
+                HashSet<String> set = new HashSet<>(MainActivity.toDoList);
+                sp.edit().putStringSet("list_items",set).apply();
             }
 
             @Override
