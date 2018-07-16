@@ -8,39 +8,47 @@ import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SQLiteDatabase myDb = this.openOrCreateDatabase("Users", MODE_PRIVATE,null);
+        try{
+            //create a table called user, its in regular SQL syntax
+            SQLiteDatabase myDb = this.openOrCreateDatabase("Events", MODE_PRIVATE,null);
+            myDb.execSQL("CREATE TABLE IF NOT EXISTS events (name VARCHAR, year INT(4))");
+            myDb.execSQL("INSERT INTO events (name, year) VALUES('Millenium',2001)");
+            myDb.execSQL("INSERT INTO events (name, year) VALUES('Apocalypse',2012)");
 
-        //create a table called user, its in regular SQL syntax
-        myDb.execSQL("CREATE TABLE IF NOT EXISTS users (name VARCHAR, age INT(3))");
+            //pointer
+            Cursor c = myDb.rawQuery("SELECT * FROM events",null);
 
-         myDb.execSQL("INSERT INTO users (name, age) VALUES('William',26)");
-        myDb.execSQL("INSERT INTO users (name, age) VALUES('Elaine',7)");
-
-        Cursor c = myDb.rawQuery("SELECT * FROM users",null);
-
-        int nameIndex = c.getColumnIndex("name");
-        int ageIndex = c.getColumnIndex("age");
+            int nameIndex = c.getColumnIndex("name");
+            int yearIndex = c.getColumnIndex("year");
 
 
-        //moves cursor to top row
-        c.moveToFirst();
+            //moves cursor to top row
+            c.moveToFirst();
 
-        String name;
-        String age;
 
-        while(c != null){
+            String name;
+            String year;
 
-            name = c.getString(nameIndex);
-            age = String.valueOf(c.getInt(ageIndex));
-            //get data by column, in this case the name column
-            Log.i("db", name + "," + age);
-            //moves cursor down row
-            c.moveToNext();
+
+            while(c != null){
+
+                name = c.getString(nameIndex);
+                year = String.valueOf(c.getInt(yearIndex));
+                //get data by column, in this case the name column
+                Log.i("db", name + ":" + year);
+                //moves cursor down row
+                c.moveToNext();
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
         }
     }
 }
