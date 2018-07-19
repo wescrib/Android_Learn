@@ -1,5 +1,7 @@
 package com.company.scribner.newsfeed;
 
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,10 +27,16 @@ public class MainActivity extends AppCompatActivity {
 
     ListView listView;
 
+    SQLiteDatabase articleDb;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        articleDb = this.openOrCreateDatabase("Articles", MODE_PRIVATE, null);
+
+        articleDb.execSQL("CREATE TABLE IF NOT EXISTS articles (id INTEGER PRIMARY KEY, artcleId INTEGER, title VARCHAR, content VARCHAR)");
 
         DownloadTask task = new DownloadTask();
 
@@ -55,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
             URL url;
             HttpURLConnection urlConnection = null;
 
+            /********* FIRST LAYER OF THE API, THE IDS OF THE ARTICLE *******/
             try{
                 url = new URL(urls[0]);
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -66,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                     result += current;
                     data = reader.read();
                 }
-
+                /*********STICK IDS INTO PARSABLE JSON ARRAY*******/
                 JSONArray jsonArray = new JSONArray(result);
 
                 int numOfItems = 20;
@@ -92,11 +101,14 @@ public class MainActivity extends AppCompatActivity {
                         data = reader.read();
                     }
 
+                    /*********GET URL AND TITLE*******/
                     JSONObject jsonObj = new JSONObject(articleInfo);
                     if(!jsonObj.isNull("title") && !jsonObj.isNull("url")){
                         String articleTitle = jsonObj.getString("title");
                         String articleUrl = jsonObj.getString("url");
                         Log.i("Title/URL", articleTitle + "\n" + articleUrl);
+
+                        /*********GET CONTENT OF ARTICLE*******/
                         url = new URL(articleUrl);
                         urlConnection = (HttpURLConnection) url.openConnection();
                         inputStream = urlConnection.getInputStream();
@@ -108,6 +120,11 @@ public class MainActivity extends AppCompatActivity {
                             articleContent += current;
                             data = reader.read();
                         }
+                        String sql = "INSERT INTO articles(articleId,title,content) VALUES(?,?,?,?)";
+                        SQLiteStatement statement = articleDb.compileStatement(sql);
+                        statement.bindString(1,articleId);
+                        statement.bindString(2,articleTitle);
+                        statement.bindString(3,articleContent);
                     }
                 }
 
