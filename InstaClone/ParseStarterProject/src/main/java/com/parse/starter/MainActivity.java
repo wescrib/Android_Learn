@@ -49,15 +49,35 @@ public class MainActivity extends AppCompatActivity {
 //      });
 
       /*******************GET STUFF *******************************/
-//      ParseQuery<ParseObject> query = ParseQuery.getQuery("Score");
-//
-//      query.getInBackground("3XkFs1Ltnb", new GetCallback<ParseObject>() {
+      ParseQuery<ParseObject> query = ParseQuery.getQuery("Tweets");
+
+      query.getInBackground("FRtpXtw4nF", new GetCallback<ParseObject>() {
+          @Override
+          public void done(ParseObject object, ParseException e) {
+              if( e == null && object != null){
+                  object.getString("username");
+                  Log.i("USERNAME", object.getString("username"));
+                  Log.i("TWEET", object.getString("content"));
+
+                  object.put("content","SECOND tweet");
+                  object.saveInBackground();
+
+                  Log.i("USERNAME", object.getString("username"));
+                  Log.i("TWEET", object.getString("content"));
+              }
+          }
+      });
+
+//      ParseObject tweets = new ParseObject("Tweets");
+//      tweets.put("username", "coolguy91");
+//      tweets.put("content", "i am twittering");
+//      tweets.saveInBackground(new SaveCallback() {
 //          @Override
-//          public void done(ParseObject object, ParseException e) {
-//              if( e == null && object != null){
-//                  object.getString("username");
-//                  Log.i("USERNAME", object.getString("username"));
-//                  Log.i("SCORE", Integer.toString(object.getInt("score")));
+//          public void done(ParseException e) {
+//              if(e == null){
+//                  Log.i("Success", "posted!");
+//              }else{
+//                  Log.i("Failure", "not posted");
 //              }
 //          }
 //      });
