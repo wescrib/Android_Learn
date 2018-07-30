@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Switch;
 
+import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.LogInCallback;
 import com.parse.Parse;
@@ -25,6 +26,8 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
 /*************SAVE STUFF ****************/
 //      ParseObject score = new ParseObject("Score");
-//      score.put("username", "nick");
-//      score.put("score", 45);
+//      score.put("username", "will");
+//      score.put("score", 100);
 //      score.saveInBackground(new SaveCallback() {
 //          @Override
 //          public void done(ParseException e) {
@@ -48,39 +51,44 @@ public class MainActivity extends AppCompatActivity {
 //          }
 //      });
 
-      /*******************GET STUFF *******************************/
-      ParseQuery<ParseObject> query = ParseQuery.getQuery("Tweets");
-
-      query.getInBackground("FRtpXtw4nF", new GetCallback<ParseObject>() {
-          @Override
-          public void done(ParseObject object, ParseException e) {
-              if( e == null && object != null){
-                  object.getString("username");
-                  Log.i("USERNAME", object.getString("username"));
-                  Log.i("TWEET", object.getString("content"));
-
-                  object.put("content","SECOND tweet");
-                  object.saveInBackground();
-
-                  Log.i("USERNAME", object.getString("username"));
-                  Log.i("TWEET", object.getString("content"));
-              }
-          }
-      });
-
-//      ParseObject tweets = new ParseObject("Tweets");
-//      tweets.put("username", "coolguy91");
-//      tweets.put("content", "i am twittering");
-//      tweets.saveInBackground(new SaveCallback() {
+      /*******************GET ONE STUFF *******************************/
+//      ParseQuery<ParseObject> query = ParseQuery.getQuery("Tweets");
+//
+//      query.getInBackground("FRtpXtw4nF", new GetCallback<ParseObject>() {
 //          @Override
-//          public void done(ParseException e) {
-//              if(e == null){
-//                  Log.i("Success", "posted!");
-//              }else{
-//                  Log.i("Failure", "not posted");
+//          public void done(ParseObject object, ParseException e) {
+//              if( e == null && object != null){
+//                  object.getString("username");
+//                  Log.i("USERNAME", object.getString("username"));
+//                  Log.i("TWEET", object.getString("content"));
+//
+//                  object.put("content","SECOND tweet");
+//                  object.saveInBackground();
+//
+//                  Log.i("USERNAME", object.getString("username"));
+//                  Log.i("TWEET", object.getString("content"));
 //              }
 //          }
 //      });
+
+      ParseQuery<ParseObject> query = ParseQuery.getQuery("Score");
+      /**************** SET CONDITION ***************************/
+      query.whereGreaterThan("score", 50);
+      query.setLimit(1);
+    /******************* ALL **************************/
+      query.findInBackground(new FindCallback<ParseObject>() {
+          @Override
+          public void done(List<ParseObject> objects, ParseException e) {
+              if(e == null){
+                  if(objects.size() > 0){
+                      for(ParseObject obj : objects){
+                          Log.i("username", obj.getString("username"));
+                          Log.i("username", Integer.toString(obj.getInt("score")));
+                      }
+                  }
+              }
+          }
+      });
     
     ParseAnalytics.trackAppOpenedInBackground(getIntent());
   }
