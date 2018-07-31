@@ -12,7 +12,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -32,48 +34,61 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    EditText emailEditText;
+    EditText passwordEditText;
+    EditText usernameEditText;
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
+
+
     ParseUser user = new ParseUser();
 
-    user.setUsername("William");
-    user.setPassword("test1234");
-
-//    user.signUpInBackground(new SignUpCallback() {
-//        @Override
-//        public void done(ParseException e) {
-//            if(e == null){
-//                Log.i("Success", "Login successful");
-//            }else{
-//                e.printStackTrace();
-//            }
-//        }
-//    });
-
-//    ParseUser.logInInBackground("William", "test1234", new LogInCallback() {
-//        @Override
-//        public void done(ParseUser user, ParseException e) {
-//            if(user != null){
-//                Log.i("Success","We logged in");
-//            }else{
-//                e.printStackTrace();
-//            }
-//        }
-//    });
-
-      if(ParseUser.getCurrentUser() != null){
-          Log.i("Status", "Signed in");
-      }else{
-          Log.i("Status", "Signed out");
-      }
-
-      ParseUser.logOut();
     
     ParseAnalytics.trackAppOpenedInBackground(getIntent());
+  }
+
+  public void signUp(View view) {
+      ParseUser user = new ParseUser();
+
+      usernameEditText = findViewById(R.id.usernameEditText);
+      emailEditText = findViewById(R.id.emailForm);
+      passwordEditText = findViewById(R.id.passwordForm);
+
+      String errMsg = "";
+
+      if (emailEditText.getText().toString().matches("") && passwordEditText.getText().toString().matches("") && usernameEditText.getText().toString().matches("")) {
+          errMsg += "Username, Email, Password is required";
+          Toast.makeText(this, errMsg, Toast.LENGTH_SHORT).show();
+      }else if(usernameEditText.getText().toString().matches("")) {
+          errMsg += "Username is required";
+          Toast.makeText(this, errMsg + " required", Toast.LENGTH_SHORT).show();
+      } else if (emailEditText.getText().toString().matches("")) {
+          errMsg += "Email is required";
+          Toast.makeText(this, errMsg + " required", Toast.LENGTH_SHORT).show();
+      } else if(passwordEditText.getText().toString().matches("")){
+              errMsg += "Password is required";
+              Toast.makeText(this, errMsg + " required", Toast.LENGTH_SHORT).show();
+      }else{
+          user.setUsername(usernameEditText.getText().toString());
+          user.setEmail(emailEditText.getText().toString());
+          user.setPassword(passwordEditText.getText().toString());
+
+          user.signUpInBackground(new SignUpCallback() {
+              @Override
+              public void done(ParseException e) {
+                  if(e == null){
+                      Log.i("SignUp", "Success!");
+                  }else {
+                      Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                  }
+              }
+          });
+      }
   }
 
 }
