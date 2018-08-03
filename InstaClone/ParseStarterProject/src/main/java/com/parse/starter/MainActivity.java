@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 package com.parse.starter;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -49,15 +50,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     passwordEditText = findViewById(R.id.passwordForm);
     usernameEditText = findViewById(R.id.usernameEditText);
     emailEditText = findViewById(R.id.emailForm);
-      ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout);
-      ImageView instagramLogo = findViewById(R.id.logo);
+    ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout);
+    ImageView instagramLogo = findViewById(R.id.logo);
 
     ParseUser.logOut();
 
 
-      passwordEditText.setOnKeyListener(this);
-      constraintLayout.setOnClickListener(this);
-      instagramLogo.setOnClickListener(this);
+    passwordEditText.setOnKeyListener(this);
+    constraintLayout.setOnClickListener(this);
+    instagramLogo.setOnClickListener(this);
+
+    if(ParseUser.getCurrentUser() != null){
+        showAllUsers();
+    }
     
     ParseAnalytics.trackAppOpenedInBackground(getIntent());
   }
@@ -95,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                   @Override
                   public void done(ParseException e) {
                       if (e == null) {
+                          showAllUsers();
                           Toast.makeText(MainActivity.this, "Registered!", Toast.LENGTH_SHORT).show();
                       } else {
                           Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -106,9 +112,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                   @Override
                   public void done(ParseUser user, ParseException e) {
                       if(user != null){
-                          Toast.makeText(MainActivity.this, "Logged in!!!", Toast.LENGTH_SHORT).show();
+                          showAllUsers();
                       }else{
-                          Toast.makeText(MainActivity.this, "FAILED!", Toast.LENGTH_SHORT).show();
+                          Toast.makeText(MainActivity.this, "Invalid credentials!", Toast.LENGTH_SHORT).show();
                       }
                   }
               });
@@ -157,5 +163,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           signUp(v);
       }
         return false;
+    }
+
+    public void showAllUsers(){
+      Intent intent = new Intent(getApplication(), UserListActivity.class);
+      startActivity(intent);
     }
 }
