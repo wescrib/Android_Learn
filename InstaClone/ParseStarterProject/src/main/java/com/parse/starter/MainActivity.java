@@ -53,8 +53,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ConstraintLayout constraintLayout = findViewById(R.id.constraintLayout);
     ImageView instagramLogo = findViewById(R.id.logo);
 
-    ParseUser.logOut();
-
 
     passwordEditText.setOnKeyListener(this);
     constraintLayout.setOnClickListener(this);
@@ -167,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void showAllUsers(){
       Intent intent = new Intent(getApplication(), UserListActivity.class);
+
       startActivity(intent);
     }
 }
